@@ -10,13 +10,11 @@ import { MatSnackBarModule, MatInputModule, MatDividerModule, MatCardModule, Mat
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormsModule} from '@angular/forms';
 import { AppRoutingModule } from './/app-routing.module';
-import { SignUpComponent } from './sign-up/sign-up.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SignInComponent,
-    SignUpComponent
+    SignInComponent
   ],
   imports: [
     BrowserModule,
