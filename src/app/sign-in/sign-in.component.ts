@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HandleAuthService } from '../handle-auth.service';
 import { MatSnackBar, MatInput } from '@angular/material';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -10,7 +11,7 @@ import { MatSnackBar, MatInput } from '@angular/material';
 })
 export class SignInComponent implements OnInit {
 
-  constructor(private authService: HandleAuthService, public snackBar: MatSnackBar) { }
+  constructor(private authService: HandleAuthService, public snackBar: MatSnackBar, private router: Router) { }
   public email: string;
   public pwd: string;
   signIn() {
@@ -36,4 +37,7 @@ export class SignInComponent implements OnInit {
   ngOnInit() {
   }
 
+  routeSignUp() {
+    this.router.navigateByUrl("/signUp");
+  }
 }
