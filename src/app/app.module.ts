@@ -6,9 +6,9 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { AngularFireModule } from 'angularfire2';
 import { environment } from '../environments/environment';
 import { AngularFireAuthModule } from 'angularfire2/auth';
-import { MatSnackBarModule, MatInputModule, MatDividerModule, MatCardModule, MatButtonModule, MatGridListModule } from '@angular/material';
+import { MatSnackBarModule, MatStepperModule,  MatIconModule, MatInputModule, MatDividerModule, MatCardModule, MatButtonModule, MatGridListModule } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { AppRoutingModule } from './/app-routing.module';
 import { SignUpComponent } from './sign-up/sign-up.component';
 
@@ -24,8 +24,11 @@ import { SignUpComponent } from './sign-up/sign-up.component';
     AngularFireAuthModule,
     MatSnackBarModule,
     MatInputModule,
+    ReactiveFormsModule,
+    MatStepperModule,
     BrowserAnimationsModule,
     MatDividerModule,
+    MatIconModule,
     MatButtonModule,
     FormsModule,
     MatGridListModule,
