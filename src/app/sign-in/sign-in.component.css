@@ -1,3 +1,4 @@
 .signin-card {
-    max-width: 25%;
+    max-width: 20%;
+    position: absolute; 
 }

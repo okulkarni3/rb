@@ -1,0 +1,16 @@
+.spinner {
+    position: fixed;
+    z-index: 999;
+    overflow: show;
+    margin: auto;
+    top: 50%;
+    left: 50%;
+}
+
+.suggestion {
+    background-color: rgb(248, 241, 241);
+}
+
+.up {
+    font-size: 120%;
+}

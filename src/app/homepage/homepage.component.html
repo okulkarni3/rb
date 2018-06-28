@@ -1,0 +1,121 @@
+<mat-spinner class="spinner" *ngIf="loggedInUser === undefined else showusername" [diameter]="150"></mat-spinner>
+<ng-template #showusername>
+    <div style="display: grid; grid-row-gap: 10%; grid-column-gap: 5%; grid-template-columns: auto auto auto; padding-top:5%;">
+        <div style="grid-row: 1 / span 1;">
+            <mat-card style="align-content: center">
+                <mat-card-header>
+                    <mat-card-title color="primary">Profile</mat-card-title>
+                    <mat-card-subtitle color="primary">{{ loggedInUser.name }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <span matBadge="{{ loggedInUser.peerPoints }}" matBadgeOverlap="false">Peer Points</span>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        <!-- My posts-->
+        <div style="grid-row: 1 / span 1;" *ngIf="getPostsRoute() === 'myPosts' else invitedPosts">
+            <div *ngFor="let post of usersPosts" style="padding-bottom: 2%; height:50%;">
+                <mat-card style="align-content:center; padding-bottom: 5%;width: 75%;">
+                    <mat-card-header>
+                        <mat-card-title color="primary"> {{ post.title }}</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <codemirror [(ngModel)]="post.pText" [config]="{readOnly:true,lineNumbers:true, theme:'eclipse', mode:'clike'}">
+                        </codemirror>
+                        <div style="margin-top:5%;">
+                            <mat-accordion>
+                                <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            Suggestions
+                                        </mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <mat-list dense>
+                                        <mat-list-item class="suggestion" *ngFor="let sugg of suggestionsByPost.get(post.postId)">
+                                            <p matLine style="margin-top:3%; margin-bottom:0%;">
+                                                <b>{{ loggedInUser.name == sugg.by?'You':sugg.by }}:</b> {{ sugg.suggestion }}</p>
+                                            <div matLine style="margin-left:65%;">
+                                                <span matBadge="{{ sugg.recommended}}">
+                                                    <button mat-icon-button matTooltip="Recommend this change" (click)="addRecommend(sugg);">
+                                                        <mat-icon class="up">arrow_upward</mat-icon>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                            <mat-divider></mat-divider>
+                                        </mat-list-item>
+                                    </mat-list>
+                                </mat-expansion-panel>
+                                <mat-expansion-panel [expanded]="suggested">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            Suggest a code change
+                                        </mat-panel-title>
+                                    </mat-expansion-panel-header>
+                                    <mat-form-field style="width:100%;">
+                                        <input matInput placeholder="Suggestion" #suggestion>
+                                    </mat-form-field>
+                                    <button mat-raised-button color="accent" (click)="addSuggestion(post, suggestion)"> Suggest</button>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+            </div>
+        </div>
+    </div>
+</ng-template>
+<!-- Invited Posts template-->
+<ng-template #invitedPosts>
+        <div style="grid-row: 1 / span 1;">
+            
+                 <div *ngFor="let post of this.handleFbService.invitedPosts">
+                    <mat-card style="align-content:center; padding-bottom: 5%;">
+                            <mat-card-header>
+                                <mat-card-title color="primary">By: <b>{{ post.byName }}</b></mat-card-title> 
+                                   <mat-card-subtitle> Title: {{ post.title  }}</mat-card-subtitle>
+                            </mat-card-header>
+                           <mat-card-content>
+                                <codemirror [(ngModel)]="post.pText" [config]="{readOnly:true,lineNumbers:true, theme:'eclipse', mode:'clike'}">
+                                </codemirror>
+                                <div style="margin-top:5%;">
+                                        <mat-accordion>
+                                            <mat-expansion-panel>
+                                                <mat-expansion-panel-header>
+                                                    <mat-panel-title>
+                                                        Suggestions
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <mat-list dense>
+                                                    <mat-list-item class="suggestion" *ngFor="let sugg of this.handleFbService.invitedPostSuggestions.get(post.postId)">
+                                                        <p matLine style="margin-top:3%; margin-bottom:0%;">
+                                                            <b>{{ loggedInUser.name == sugg.by?'You':sugg.by }}:</b> {{ sugg.suggestion }}</p>
+                                                        <div matLine style="margin-left:65%;">
+                                                            <span matBadge="{{ sugg.recommended}}">
+                                                                <button mat-icon-button matTooltip="Recommend this change" (click)="addRecommend(sugg);">
+                                                                    <mat-icon class="up">arrow_upward</mat-icon>
+                                                                </button>
+                                                            </span>
+                                                        </div>
+                                                        <mat-divider></mat-divider>
+                                                    </mat-list-item>
+                                                </mat-list>
+                                            </mat-expansion-panel>
+                                            <mat-expansion-panel [expanded]="suggested">
+                                                <mat-expansion-panel-header>
+                                                    <mat-panel-title>
+                                                        Suggest a code change
+                                                    </mat-panel-title>
+                                                </mat-expansion-panel-header>
+                                                <mat-form-field style="width:100%;">
+                                                    <input matInput placeholder="Suggestion" #suggestion>
+                                                </mat-form-field>
+                                                <button mat-raised-button color="accent" (click)="addSuggestion(post, suggestion)"> Suggest</button>
+                                            </mat-expansion-panel>
+                                        </mat-accordion>
+                                    </div>
+                            </mat-card-content>
+                        </mat-card>
+        </div>
+    </div>
+</ng-template>

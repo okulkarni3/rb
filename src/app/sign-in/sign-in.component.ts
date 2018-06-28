@@ -30,11 +30,13 @@ export class SignInComponent implements OnInit {
       duration: 2000
     });
   }
-  singOut() {
-    this.authService.logout();
-  }
 
   ngOnInit() {
+    this.authService.afAuth.user.subscribe((user)=>{
+      if(user) {
+        this.router.navigateByUrl("/homepage?posts=myPosts");
+      }
+    })
   }
 
   routeSignUp() {

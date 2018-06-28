@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar, MatInput, MatStepper } from '@angular/material';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { HandleAuthService } from '../handle-auth.service';
+import { HandFbService } from '../hand-fb.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -13,51 +15,62 @@ export class SignUpComponent implements OnInit {
   email: string;
   password: string;
   confirmPassword: string;
-  nameFormGroup: FormGroup;
-  credFormGroup: FormGroup;
+  isLinear: false;
 
-  constructor(public snackBar: MatSnackBar, private formBuilder: FormBuilder) {
+  constructor(public snackBar: MatSnackBar, private fbService: HandFbService, private afAuthService: HandleAuthService) {
    }
 
    valUserName(stepper) {
     if(this.userName === undefined || this.userName === "") {
-      this.snackBar.open("Please provide a username","Done");
+      this.snackBar.open("Please provide your name","Done",{
+        duration: 2000
+      });
     } else {
       stepper.next();
     }
    }
 
    valConfirmPwd(stepper) {
-     var pwdMatch: boolean = false;
+     var valFlag: boolean = true;
     if((this.password === undefined && this.confirmPassword === undefined)
     || (this.password === "" && this.confirmPassword === "")) {
-      this.snackBar.open("Please provide valid password","Done");
+      this.snackBar.open("Please provide valid password","Done",{
+        duration: 2000
+      });
+      valFlag = false;
     }
 
     if ((this.password != this.confirmPassword)){
-      this.snackBar.open("Passwords do not match", "Done");
+      this.snackBar.open("Passwords do not match", "Done",{
+        duration: 2000
+      });
+      valFlag = false;
     } else {
-      pwdMatch = true;
+        valFlag = valFlag?true:false;
     }
 
     if(this.email === undefined || this.email === "") {
-      this.snackBar.open("Email cannot be empty","Done");
+      valFlag = false;
+      this.snackBar.open("Email cannot be empty","Done",{
+        duration: 2000
+      });
     }
-    
-    if(this.email != undefined && this.email != "" && pwdMatch) {
+    if(valFlag) {
+      console.log(valFlag);
       stepper.next();
     }
 
   }
-  ngOnInit() {
-    this.nameFormGroup = this.formBuilder.group({
-      userName: ['', Validators.required]
+
+  signUp() {
+    this.afAuthService.signUp(this.userName,this.email, this.confirmPassword).then((success)=>{
+      this.fbService.createUserObject(this.userName);
+    }).catch((error)=>{
+      this.snackBar.open("Error signing you up. Contact admin","Done");
     });
-    /*this.credFormGroup = this.formBuilder.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required],
-      confirmPassword: ['', Validators.required]
-    });*/
+  }
+
+  ngOnInit() {
   }
 
 }

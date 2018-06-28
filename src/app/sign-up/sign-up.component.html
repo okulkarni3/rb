@@ -1,5 +1,6 @@
-<mat-horizontal-stepper #stepper>
- < <mat-step>
+<mat-card-title><h6>Sign Up for ReviewBook</h6></mat-card-title>
+  <mat-vertical-stepper [linear]="false" #stepper>
+  <mat-step>
         <ng-template matStepLabel>Your name</ng-template>
     <mat-form-field>
       <input matInput [(ngModel)]="userName" placeholder="Your Name" required/>
@@ -32,8 +33,8 @@
   </mat-step>
   <mat-step label="Done">
     <div>
-      <button mat-button (click)="stepper.reset()">Reset</button>
-      <button mat-button >Register</button>
+      <button mat-button (click)="stepper.reset()" color="primary">Reset</button>
+      <button mat-button (click)="signUp()" color="accent" >Register</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>
+</mat-vertical-stepper>
