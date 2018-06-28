@@ -70,14 +70,32 @@ export class HomepageComponent implements OnInit {
     }
   }
 
-  addRecommend(sugg:any, button){
+  addRecommend(sugg:any){
       this.handleFbService.increaseRecommendBySuggId(sugg);
-      button.disabled = true;
+      
   }
 
   ngOnDestroy() {
-    this.userSub.unsubscribe();
-    this.postsSub.unsubscribe();
+    if(this.userSub != undefined) {
+      this.userSub.unsubscribe();
+      if(this.handleFbService.invitedPostsSub != undefined){
+        this.handleFbService.invitedPosts = new Array();
+        this.handleFbService.invitedPostsSub.unsubscribe();
+        console.log("unsubscribed from invitedPosts");
+      }
+      if(this.handleFbService.invitedPostSuggSub != undefined){
+        this.handleFbService.invitedPostSuggestions = new Map();
+        this.handleFbService.invitedPostSuggSub.unsubscribe();
+        console.log("unsubscribed from invitedPostsSugg");
+      }
+    }
+    if( this.postsSub != undefined){
+      this.postsSub.unsubscribe();
+      console.log("unsubscribed from Myposts");
+    }
+    if(this.suggestionSub != undefined) {
     this.suggestionSub.unsubscribe();
+    console.log("unsubscribed from MyPostsSugg");
+    }
   }
 }

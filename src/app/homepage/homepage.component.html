@@ -67,7 +67,7 @@
 </ng-template>
 <!-- Invited Posts template-->
 <ng-template #invitedPosts>
-        <div style="grid-row: 1 / span 1;">
+        <div style="grid-row: 1 / span 1;" *ngIf="this.handleFbService.invitedPosts?.length != 0 else noPosts">
             
                  <div *ngFor="let post of this.handleFbService.invitedPosts">
                     <mat-card style="align-content:center; padding-bottom: 5%;">
@@ -117,5 +117,11 @@
                             </mat-card-content>
                         </mat-card>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #noPosts>
+    <div style="grid-row: 1 / span 1;">
+        <p>No posts. Try refreshing the page</p>
     </div>
 </ng-template>
