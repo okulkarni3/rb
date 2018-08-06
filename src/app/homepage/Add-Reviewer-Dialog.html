@@ -1,0 +1,18 @@
+<div style="padding-left:35%; max-width: 50%;">
+    <h4>Reviewers from your team</h4>
+    <div style="max-height:200px; overflow-y: auto;">
+        <mat-list role="list" *ngFor="let name of data.users">
+                <mat-list-item role="listitem">
+                    <mat-checkbox value="name.id" (change)="addSelectedReviewer(name.id, data.postId)">
+                        {{ name.name }}
+                    </mat-checkbox>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+        </mat-list>
+    </div>
+    <div style="padding-top: 10%; padding-left:25%;">
+            <button mat-raised-button color="accent" (click)="inviteReviewers()">Add</button>
+            <span style="padding-right:10%;"></span>
+            <button mat-raised-button (click)="onNoClick()">Cancel</button>
+    </div>
+</div>

@@ -2,9 +2,8 @@ import { Component, OnInit, Input, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HandleAuthService } from '../handle-auth.service';
 import { AngularFireAuth } from 'angularfire2/auth';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSnackBar} from '@angular/material';
 import { HandFbService } from '../hand-fb.service';
-import { CreatNewPostDialogComponent } from '../creat-new-post-dialog/creat-new-post-dialog.component';
 
 @Component({
   selector: 'app-main-toolbar',
@@ -15,6 +14,9 @@ export class MainToolbarComponent implements OnInit {
 
   pText: string;
   pTitle: string;
+  userSub: any;
+  fbAuth: AngularFireAuth;
+  user: any;
 
   openDialog(): void {
     let dialogRef = this.dialog.open(CreatNewPostDialog, {
@@ -29,17 +31,37 @@ export class MainToolbarComponent implements OnInit {
   }
   
   constructor( private router: Router, public authServ: HandleAuthService,
-    public dialog: MatDialog, private fbServ: HandFbService) {
+    public dialog: MatDialog, private fbServ: HandFbService, public snackBar: MatSnackBar) {
    }
+
+   getUserDetails() {
+    this.userSub = this.fbServ.getObject('Users/'+JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid).subscribe(user=>{
+        this.user = user;
+    });
+  }
+
 
    signOut() {
      this.authServ.logout();
    }
-  fbAuth: AngularFireAuth = this.authServ.afAuth;
+  
+
   ngOnInit() {
+    this.fbAuth = this.authServ.afAuth;
+    this.fbServ.setLoggedInUserName();
+  }
+
+  ngOnDestroy() {
+    this.userSub.unsubscribe();
   }
 
   createPost(pTitle: string, pText: string){
+    this.fbServ.setLoggedInUserName();
+    if(this.fbServ.loggedInUserName === "" || this.fbServ.loggedInUserName === undefined) {
+      this.snackBar.open("Something went wrong please try again!","Okay",{
+        duration: 2000
+      });
+    }
     this.fbServ.createPostForLoggedinUser(pTitle,pText);
   }
 
@@ -60,4 +82,3 @@ export class CreatNewPostDialog {
   }
 
 }
-
