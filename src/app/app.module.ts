@@ -18,7 +18,7 @@ import { AddReviewerDialog } from './homepage/homepage.component';
 import { MainToolbarComponent, CreatNewPostDialog } from './main-toolbar/main-toolbar.component';
 import { HomepageComponent } from './homepage/homepage.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
-import { CreatNewPostDialogComponent } from './creat-new-post-dialog/creat-new-post-dialog.component';
+import { AlertModalComponent } from './alert-modal/alert-modal.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +30,7 @@ import { CreatNewPostDialogComponent } from './creat-new-post-dialog/creat-new-p
     LandingPageComponent,
     CreatNewPostDialog,
     AddReviewerDialog,
-    CreatNewPostDialogComponent
+    AlertModalComponent
   ],
   imports: [
     BrowserModule,
@@ -63,7 +63,7 @@ import { CreatNewPostDialogComponent } from './creat-new-post-dialog/creat-new-p
     AppRoutingModule,
     CodemirrorModule
   ],
-  entryComponents:[CreatNewPostDialog, AddReviewerDialog],
+  entryComponents:[CreatNewPostDialog, AddReviewerDialog, AlertModalComponent],
   providers: [],
   bootstrap: [AppComponent]
 })

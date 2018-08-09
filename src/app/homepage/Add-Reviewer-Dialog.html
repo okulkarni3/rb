@@ -1,18 +1,21 @@
-<div style="padding-left:35%; max-width: 50%;">
-    <h4>Reviewers from your team</h4>
-    <div style="max-height:200px; overflow-y: auto;">
+
+<div style="padding-left:35%;">
+    
+        <h4 mat-dialog-title>Reviewers from your team</h4>
+        <mat-dialog-content>
         <mat-list role="list" *ngFor="let name of data.users">
-                <mat-list-item role="listitem">
-                    <mat-checkbox value="name.id" (change)="addSelectedReviewer(name.id, data.postId)">
-                        {{ name.name }}
-                    </mat-checkbox>
-                </mat-list-item>
-                <mat-divider></mat-divider>
-        </mat-list>
-    </div>
-    <div style="padding-top: 10%; padding-left:25%;">
-            <button mat-raised-button color="accent" (click)="inviteReviewers()">Add</button>
-            <span style="padding-right:10%;"></span>
-            <button mat-raised-button (click)="onNoClick()">Cancel</button>
-    </div>
+            <mat-list-item role="listitem">
+                <mat-checkbox value="name.id" [checked]="name.invitedPosts.includes(data.postId)" (change)="addSelectedReviewer(name.id, data.postId, $event.checked)">
+                    {{ name.name }}
+                </mat-checkbox>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            </mat-list>
+        </mat-dialog-content>
+        <mat-dialog-actions>
+            <button mat-raised-button color="accent" style="padding-right: 10%;" (click)="inviteReviewers()">Update</button>
+       
+            <button mat-raised-button [mat-dialog-close]="true">Cancel</button>
+        </mat-dialog-actions>
+        
 </div>

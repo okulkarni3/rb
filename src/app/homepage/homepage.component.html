@@ -13,7 +13,7 @@
         <div style="grid-row: 1 / span 1;" *ngIf="(usersPosts.length != 0 && getPostsRoute() === 'myPosts') else invitedPosts">
             <h4>Your Posts</h4>
             <div *ngFor="let post of usersPosts" style="padding-bottom: 2%; height:50%;">
-                <mat-card *ngIf="post.postId != null && post.postId != ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;">
+                <mat-card *ngIf="post.postId != null && post.postId != ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;" class="z-depth">
                         <span style="padding-left:94%;">
                                 <button mat-icon-button [matMenuTriggerFor]="menu">
                                         <mat-icon>more_vert</mat-icon>
@@ -21,7 +21,7 @@
                                       <mat-menu #menu="matMenu">
                                         <button mat-menu-item (click)="getReviewers(post.postId)">
                                           <mat-icon>person_add</mat-icon>
-                                          <span>Add Reviewer</span>
+                                          <span>Update Reviewers</span>
                                         </button>
                                         <button mat-menu-item (click)="deletePostById(post.postId)">
                                                 <mat-icon>delete</mat-icon>
@@ -66,7 +66,7 @@
                                         </mat-panel-title>
                                     </mat-expansion-panel-header>
                                     <mat-form-field style="width:100%;">
-                                        <input matInput placeholder="Suggestion" #suggestion>
+                                        <textarea matInput placeholder="Suggestion" #suggestion></textarea>
                                     </mat-form-field>
                                     <button mat-raised-button color="accent" (click)="addSuggestion(post, suggestion)"> Suggest</button>
                                 </mat-expansion-panel>
@@ -82,9 +82,9 @@
 <ng-template #invitedPosts>
         <div style="grid-row: 1 / span 1;" *ngIf="this.handleFbService.invitedPosts?.length != 0 else noPosts">
             <h4>Invited Posts</h4>
-                 <div *ngFor="let post of this.handleFbService.invitedPosts">
+                 <div *ngFor="let post of this.handleFbService.invitedPosts" style = "padding-bottom: 2%; height: 50%;">
                      
-                    <mat-card *ngIf=" post != null && post.postId !== ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;">
+                    <mat-card *ngIf=" post != null && post.postId !== ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;" class="z-depth">
                             <mat-card-header>
                                 <mat-card-title color="primary">By: <b>{{ post.byName }}</b></mat-card-title> 
                                    <mat-card-subtitle> Title: {{ post.title  }}</mat-card-subtitle>
@@ -124,7 +124,7 @@
                                                     </mat-panel-title>
                                                 </mat-expansion-panel-header>
                                                 <mat-form-field style="width:100%;">
-                                                    <input matInput placeholder="Suggestion" #suggestion>
+                                                    <textarea matInput placeholder="Suggestion" #suggestion></textarea>
                                                 </mat-form-field>
                                                 <button mat-raised-button color="accent" (click)="addSuggestion(post, suggestion)"> Suggest</button>
                                             </mat-expansion-panel>

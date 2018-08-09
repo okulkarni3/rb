@@ -4,6 +4,7 @@ import { HandleAuthService } from '../handle-auth.service';
 import { AngularFireAuth } from 'angularfire2/auth';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSnackBar} from '@angular/material';
 import { HandFbService } from '../hand-fb.service';
+import { MessagingService } from '../messaging.service';
 
 @Component({
   selector: 'app-main-toolbar',
@@ -17,6 +18,7 @@ export class MainToolbarComponent implements OnInit {
   userSub: any;
   fbAuth: AngularFireAuth;
   user: any;
+  message: any;
 
   openDialog(): void {
     let dialogRef = this.dialog.open(CreatNewPostDialog, {

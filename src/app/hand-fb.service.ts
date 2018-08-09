@@ -18,6 +18,8 @@ export class HandFbService {
   public invitedPostIdsSub;
   public invitedPostsSub;
   public invitedPostSuggSub;
+  public invitedReviewersSub;
+  public uninvitedReviewersSub;
   constructor(private fb: AngularFireDatabase, private authServ: HandleAuthService) {
    }
 
@@ -28,7 +30,7 @@ export class HandFbService {
 
   createUserObject(name) {
     const newUser = this.fb.object("Users/"+JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid);
-    newUser.set({"name":name,"peerPoints":"0",id:JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid, invitedPosts:"",invitedPostToAdd:""});
+    newUser.set({"name":name,"peerPoints":"0",id:JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid, invitedPosts:"",invitedPostToAdd:"",invitedPostToRemove:""});
   }
 
   queryLoggedinUsersPosts(){
@@ -123,9 +125,33 @@ export class HandFbService {
   }
 
   inviteReviewers(reviewers: Set<any>, postId: string) {
+    console.log("***inviteReviewers***to post****"+postId);
     reviewers.forEach((id)=>{
-      this.fb.object('Users/'+id).update({invitedPostToAdd:postId})
+      this.fb.object("Users/"+id).query.once("value").then(user=>{
+        const jsonUser = JSON.parse(JSON.stringify(user));
+        const invitedPosts = jsonUser.invitedPosts;
+        if(!invitedPosts.includes(postId)){
+        const updatedInvitedPosts = invitedPosts + ";" + postId;
+        this.fb.object("Users/"+id).update({invitedPosts: updatedInvitedPosts});
+        }
+      }).catch(error=>{
+        console.log("error"+error);
+      });
     });
   }
 
+  uninviteReviewers(reviewers: Set<any>, postId: string){
+    reviewers.forEach((id)=>{
+      this.fb.object("Users/"+id).query.once("value").then(user=>{
+        const jsonUser = JSON.parse(JSON.stringify(user));
+        let invitedPosts = jsonUser.invitedPosts;
+        if(invitedPosts.includes(postId)){
+        const updatedInvitedPosts = invitedPosts.replace(postId,"").replace(";;",";");
+        this.fb.object("Users/"+id).update({invitedPosts: updatedInvitedPosts});
+        }
+      }).catch(error=>{
+        console.log("error"+error);
+      });
+    });
+  }
 }

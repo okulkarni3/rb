@@ -2,8 +2,10 @@ import { Component, OnInit, inject, Inject } from '@angular/core';
 import { HandleAuthService } from '../handle-auth.service';
 import { Subscription } from 'rxjs';
 import { HandFbService } from '../hand-fb.service';
-import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA, MatDialog  } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MessagingService } from '../messaging.service';
+import { AlertModalComponent } from '../alert-modal/alert-modal.component';
 
 @Component({
   selector: 'app-homepage',
@@ -26,22 +28,16 @@ export class HomepageComponent implements OnInit {
   postsSub: Subscription;
   suggestionSub: Subscription;
   reviewers:any;
+  message;
 
   constructor(private authServ: HandleAuthService, public dialog: MatDialog,
     private handleFbService: HandFbService, private snackBar: MatSnackBar,private router: Router,
-    private route:ActivatedRoute) { }
+    private route:ActivatedRoute, private messaging: MessagingService) { }
 
   getPostsRoute() {
     return this.route.snapshot.queryParamMap.get("posts");
   }
 
-  routeOnEmptyPosts() {
-   // this.router.navigate(["/homepage"],{
-   //   queryParams:{
-    //    posts:"invitedPosts"
-     // }
-    //});
-  }
 
   ngOnInit() {
     if(this.authServ.afAuth.auth.currentUser != undefined) {
@@ -59,6 +55,9 @@ export class HomepageComponent implements OnInit {
           });
         });
       });
+      this.messaging.getPermission();
+      this.messaging.receiveMessage();
+      this.message = this.messaging.currentMessage;
     }
   }
 
@@ -86,16 +85,24 @@ export class HomepageComponent implements OnInit {
   }
 
   deletePostById(postId: string) {
-    this.handleFbService.deletePostById(postId);
+    const dialogRef = this.dialog.open(AlertModalComponent,{
+      width:'100%',
+      data: false,
+    });
+    dialogRef.afterClosed().subscribe(result=>{
+      if(result){
+        this.handleFbService.deletePostById(postId);
+      }
+    });
   }
 
   getReviewers(postId: string) {
-    
       var userNames = new Set<any>();
       this.handleFbService.usersOfSameTeam.subscribe((users)=>{
        users.forEach((user)=>{
-        if (user.id != JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid
-            && !user.invitedPosts.includes(postId)) {
+        if (user.id != JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid)
+          //  && !user.invitedPosts.includes(postId)) 
+          {
           userNames.add(user);
         }
        });
@@ -103,6 +110,14 @@ export class HomepageComponent implements OnInit {
     const dialogRef = this.dialog.open(AddReviewerDialog,{
       width:'100%',
       data: {postId:postId, users: userNames},
+    });
+    dialogRef.afterClosed().subscribe(result=>{
+      console.log(result);
+      if(result == undefined || result == ""){
+      this.snackBar.open("It may take some time to update","OK",{
+        duration: 3000
+      });
+    }
     });
   }
 
@@ -122,6 +137,12 @@ export class HomepageComponent implements OnInit {
         console.log("unsubscribed from invitedPostsSugg");
       }
     }
+    if(this.handleFbService.invitedReviewersSub != undefined){
+      this.handleFbService.invitedReviewersSub.unsubscribe();
+    }
+    if(this.handleFbService.uninvitedReviewersSub != undefined){
+      this.handleFbService.uninvitedReviewersSub.unsubscribe();
+    }
     if( this.postsSub != undefined){
       this.postsSub.unsubscribe();
       console.log("unsubscribed from Myposts");
@@ -140,19 +161,24 @@ export class HomepageComponent implements OnInit {
 export class AddReviewerDialog {
 
   selectedReviewers = new Set();
+  deselectedReviewers = new Set();
   postId: string;
   constructor(
     private handleFbService: HandFbService,
     public dialogRef: MatDialogRef<AddReviewerDialog>,
-    @Inject (MAT_DIALOG_DATA) public data: string[]
+    @Inject (MAT_DIALOG_DATA) public data: any
   ) {}
 
-  addSelectedReviewer(id: string, postId: string) {
+  addSelectedReviewer(id: string, postId: string, checked:boolean) {
     this.postId = postId;
-    if(this.selectedReviewers.has(id)) {
-      this.selectedReviewers.delete(id);
+    if(checked) {
+      console.log("Checked so adding in selectedReviewers "+id);
+      this.selectedReviewers.add(id);
+      this.deselectedReviewers.delete(id);
     } else {
-    this.selectedReviewers.add(id);
+      console.log("UnChecked so adding in deselectedReviewers "+id);
+    this.deselectedReviewers.add(id);
+    this.selectedReviewers.delete(id);
     }
   }
 
@@ -163,11 +189,20 @@ export class AddReviewerDialog {
   }
 
   inviteReviewers() {
+    console.log("InviteReviewers");
     if(this.selectedReviewers.size > 0 && this.postId != null) {
+      console.log("****Adding "+this.postId+" to "+this.selectedReviewers.values());
       this.handleFbService.inviteReviewers(this.selectedReviewers, this.postId);
-      this.selectedReviewers = new Set();
-      this.postId = null;
-      this.dialogRef.close();
     }
+    if(this.deselectedReviewers.size > 0 && this.postId != null){
+      console.log("****Adding "+this.postId+" to "+this.deselectedReviewers.values());
+      this.handleFbService.uninviteReviewers(this.deselectedReviewers, this.postId);
+    }
+    this.selectedReviewers = new Set();
+    this.postId = null;
+    this.deselectedReviewers = new Set();
+    this.dialogRef.close();
   }
+
+
 }
