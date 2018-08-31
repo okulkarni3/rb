@@ -9,3 +9,4 @@ https://demo.reviewbk.com
 ## It's easy to sign up
 
 Just give username, email id, password, team name and you are set!
+![](post-demo.gif)
