@@ -1,0 +1,22 @@
+/* You can add global styles to this file, and also import other style files */
+@import 
+    '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import
+    'codemirror/lib/codemirror.css';
+@import
+    'codemirror/theme/elegant.css';
+@import 
+    url('https://fonts.googleapis.com/css?family=Cormorant+Garamond|Kaushan+Script');
+
+.CodeMirror {
+    border: 1px solid #eeffee;
+    height: auto !important;
+}
+
+.CodeMirror-scroll {
+    max-height: 500px;
+  }
+
+.mat-dialog-container {
+    margin-left:35%;
+}
