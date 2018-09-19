@@ -6,13 +6,13 @@
     <textarea matInput [(ngModel)]="data.pTitle" placeholder="Include requirements, file name"></textarea>
   </mat-form-field>
   <p>Enter your code here</p>
-      <codemirror [(ngModel)]="data.pText" [config]="{readOnly:false,lineNumbers:true,lineWrapping:true, theme:'eclipse', mode:'clike'}">
-        </codemirror>
+      <ngx-codemirror [(ngModel)]="data.pText" [options]="{readOnly:false,lineNumbers:true,lineWrapping:true, theme:'eclipse', mode:'clike'}">
+        </ngx-codemirror>
         <span style="padding-bottom: 5%;"></span>
 </mat-dialog-content>
-
 <mat-dialog-actions>
   <button mat-raised-button (click)="onNoClick()" color="warn">Cancel</button>
   <button mat-raised-button [mat-dialog-close]="data" color="accent" cdkFocusInitial>Ok</button>
 </mat-dialog-actions>
+
 </div>

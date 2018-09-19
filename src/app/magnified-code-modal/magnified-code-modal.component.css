@@ -1,0 +1,14 @@
+@import
+    'codemirror/lib/codemirror.css';
+
+@import
+    'codemirror/theme/elegant.css';
+
+.magnified {
+    width: auto;
+    height: 550px;
+}
+
+.changed {
+    text-decoration: line-through;
+}

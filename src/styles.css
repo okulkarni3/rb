@@ -5,18 +5,37 @@
     'codemirror/lib/codemirror.css';
 @import
     'codemirror/theme/elegant.css';
+@import
+    'codemirror/addon/merge/merge.css';
+@import
+    'codemirror/addon/display/fullscreen.css';
 @import 
     url('https://fonts.googleapis.com/css?family=Cormorant+Garamond|Kaushan+Script');
 
+@import "~codemirror/theme/material.css";
+
+.magnified .CodeMirror {
+            border: 1px solid brown;
+            height: 550px;
+            width: 995px;
+}
+
+.magnified .CodeMirror-scroll {
+    max-height: 550px;
+  }
+
 .CodeMirror {
-    border: 1px solid #eeffee;
-    height: auto !important;
+    border: 1px solid brown;
+    height: auto;
 }
 
 .CodeMirror-scroll {
     max-height: 500px;
   }
+  .CodeMirror-fullscreen{
+    z-index: 999;
+  }
 
 .mat-dialog-container {
-    margin-left:35%;
+    margin-left: 5%;
 }

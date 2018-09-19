@@ -1,0 +1,10 @@
+<div class="magnified">
+  <ngx-codemirror [(ngModel)]="data[0]" (keydown.control.m)="startEditing()" [options]="{readOnly:false,lineNumbers:true,lineWrapping:true, theme:'elegant', htmlMode: true, matchClosing: true, mode:'text/javascript',fullScreen:true}" #codeeditor>
+  </ngx-codemirror>
+  <div style="padding-left:65%;">
+    <mat-dialog-actions>
+      <button mat-raised-button (click)="cancel()" color="primary">Cancel</button>
+      <button mat-raised-button (click)="suggest()" color="warn" style="margin-right:5%;">Suggest</button>
+    </mat-dialog-actions>
+  </div>
+</div>

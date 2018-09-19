@@ -167,7 +167,7 @@ export class HandFbService {
   }
 
   deleteInvitedPosts() {
-    if (this.invitedPostsToDelete != null) {
+    if (this.invitedPostsToDelete != null && this.invitedPostsToDelete !== "") {
       this.fb.object("Users/" + JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid)
         .update(
           {

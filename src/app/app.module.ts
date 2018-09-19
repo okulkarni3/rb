@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { SignInComponent } from './sign-in/sign-in.component';
-import { CodemirrorModule } from 'ng2-codemirror';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -20,6 +19,13 @@ import { HomepageComponent } from './homepage/homepage.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { AlertModalComponent } from './alert-modal/alert-modal.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { MagnifiedCodeModalComponent } from './magnified-code-modal/magnified-code-modal.component';
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import 'codemirror/mode/javascript/javascript';
+import 'codemirror/mode/markdown/markdown';
+import 'codemirror/addon/display/autorefresh';
+import 'codemirror/addon/merge/merge';
+import 'codemirror/addon/display/fullscreen'
 
 @NgModule({
   declarations: [
@@ -32,7 +38,8 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
     CreatNewPostDialog,
     AddReviewerDialog,
     AlertModalComponent,
-    ForgotPasswordComponent
+    ForgotPasswordComponent,
+    MagnifiedCodeModalComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +72,7 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
     AppRoutingModule,
     CodemirrorModule
   ],
-  entryComponents:[CreatNewPostDialog, AddReviewerDialog, AlertModalComponent, ForgotPasswordComponent],
+  entryComponents:[CreatNewPostDialog, AddReviewerDialog, AlertModalComponent, ForgotPasswordComponent, MagnifiedCodeModalComponent],
   providers: [],
   bootstrap: [AppComponent]
 })

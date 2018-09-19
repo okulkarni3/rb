@@ -5,12 +5,12 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "",
-    authDomain: "",
-    databaseURL: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: ""
+    apiKey: "AIzaSyDTecfUvSfeVT4EiTuzi0L2kAfTA9p2uNQ",
+    authDomain: "review-book-rb.firebaseapp.com",
+    databaseURL: "https://review-book-rb.firebaseio.com",
+    projectId: "review-book-rb",
+    storageBucket: "review-book-rb.appspot.com",
+    messagingSenderId: "40882082283"
   }
 };
 

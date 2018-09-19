@@ -6,6 +6,7 @@ import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA, MatDialog  } from '@angular
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessagingService } from '../messaging.service';
 import { AlertModalComponent } from '../alert-modal/alert-modal.component';
+import { MagnifiedCodeModalComponent } from '../magnified-code-modal/magnified-code-modal.component';
 
 @Component({
   selector: 'app-homepage',
@@ -29,6 +30,7 @@ export class HomepageComponent implements OnInit {
   suggestionSub: Subscription;
   reviewers:any;
   message;
+  isFs: boolean = false;
 
   constructor(private authServ: HandleAuthService, public dialog: MatDialog,
     private handleFbService: HandFbService, private snackBar: MatSnackBar,private router: Router,
@@ -38,6 +40,14 @@ export class HomepageComponent implements OnInit {
     return this.route.snapshot.queryParamMap.get("posts");
   }
 
+  toggleFullscreen(mpcm) {
+    if(mpcm.codeMirror.getOption("fullScreen")){
+      mpcm.codeMirror.setOption("fullScreen",false);
+    }else {
+    mpcm.codeMirror.setOption("fullScreen",true);
+    mpcm.codeMirror.setSize("100%","100%");
+    }
+  }
 
   ngOnInit() {
     if(this.authServ.afAuth.auth.currentUser != undefined) {
@@ -64,8 +74,8 @@ export class HomepageComponent implements OnInit {
         let snackBarRef = this.snackBar.open("Your invited posts have changed.","Show me",{
           duration:3000
         });
-        snackBarRef.afterDismissed().subscribe(()=>{
-          if(snackBarRef.closeWithAction){
+        snackBarRef.afterDismissed().subscribe((action)=>{
+          if(action.dismissedByAction){
           this.router.navigateByUrl("/homepage?posts=invitedPosts");
           }
         });
@@ -133,6 +143,12 @@ export class HomepageComponent implements OnInit {
     });
   }
 
+  openFullCode(pText: string) {
+    const dialogRef = this.dialog.open(MagnifiedCodeModalComponent,{
+      data: [pText,this.handleFbService.loggedInUser.name]
+    });
+  }
+
   ngOnDestroy() {
     if(this.userSub != undefined) {
       this.userSub.unsubscribe();
@@ -160,6 +176,7 @@ export class HomepageComponent implements OnInit {
     this.suggestionSub.unsubscribe();
     }
   }
+
 }
 
 @Component({
