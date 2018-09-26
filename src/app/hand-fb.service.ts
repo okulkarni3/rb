@@ -166,6 +166,11 @@ export class HandFbService {
     });
   }
 
+  getInlineEditsByPostId(postId: string) {
+    return this.fb.list("/InlineEdits", ref => ref.orderByChild("postId")
+    .equalTo(postId)).valueChanges().pipe(take(1));
+  }
+
   deleteInvitedPosts() {
     if (this.invitedPostsToDelete != null && this.invitedPostsToDelete !== "") {
       this.fb.object("Users/" + JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid)

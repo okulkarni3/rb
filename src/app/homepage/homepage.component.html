@@ -7,42 +7,53 @@
     </div>-->
     <div style="display: grid; grid-row-gap: 10%; grid-column-gap: 5%; grid-template-columns: auto auto auto; padding-top:5%;">
         <div style="grid-row: 1 / span 1; width:25%; ">
-            
+
         </div>
         <!-- My posts-->
         <div style="grid-row: 1 / span 1;" *ngIf="((usersPosts || []).length != 0 && getPostsRoute() === 'myPosts') else invitedPosts">
             <h4>Your Posts</h4>
             <div *ngFor="let post of usersPosts" style="padding-bottom: 2%; height:100%;">
-                <mat-card *ngIf="post.postId != null && post.postId != ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;" class="z-depth">
+                <mat-card *ngIf="post.postId != null && post.postId != ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;"
+                    class="z-depth">
                     <span style="font-size: 75%;">
                         Posted on: {{ post.timestamp | date }}<br>
-                    </span>    
+                    </span>
                     <span style="padding-left:94%;">
-                                <button mat-icon-button [matMenuTriggerFor]="menu">
-                                        <mat-icon>more_vert</mat-icon>
-                                      </button>
-                                      <mat-menu #menu="matMenu">
-                                        <button mat-menu-item (click)="getReviewers(post.postId)">
-                                          <mat-icon>person_add</mat-icon>
-                                          <span>Update Reviewers</span>
-                                        </button>
-                                        <button mat-menu-item (click)="deletePostById(post.postId)">
-                                                <mat-icon>delete</mat-icon>
-                                                <span>Delete Post</span>
-                                        </button>
-                                      </mat-menu>
-                            </span>
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="getReviewers(post.postId)">
+                                <mat-icon>person_add</mat-icon>
+                                <span>Update Reviewers</span>
+                            </button>
+                            <button mat-menu-item (click)="deletePostById(post.postId)">
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete Post</span>
+                            </button>
+                            <button mat-menu-item (click)="getInlineEdits(mpcm,post.postId)">
+                                <mat-icon>comment</mat-icon>
+                                <span>Load Edits</span>
+                            </button>
+                            <button mat-menu-item (click)="toggleFullscreen(mpcm,post.postId)">
+                                Fullscreen
+                                <span>cntrl+shift+f</span>
+                            </button>
+                            <button mat-menu-item (click)="toggleEditMode(mpcm)">
+                                Edit
+                                <span>cntrl+shift+e</span>
+                            </button>
+                        </mat-menu>
+                    </span>
                     <mat-card-header>
                         <mat-card-title color="primary" style="white-space: pre-wrap"> {{ post.title }}</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-<!--                         <span style="padding-left: 97%;">
-                            <button mat-icon-button (click)="openFullCode(post.pText);">
-                                <mat-icon aria-label="View full code">fullscreen</mat-icon>
-                            </button>
-                        </span>
-                        <br> -->
-                        <ngx-codemirror [(ngModel)]="post.pText" (keyup.control.shift.f)="toggleFullscreen(mpcm)" [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', htmlMode: true, matchClosing: true, mode:'text/javascript',fullScreen:isFs,autoRefresh:true}" #mpcm>
+                        <ngx-codemirror [(ngModel)]="post.pText" (keyup.control.shift.f)="toggleFullscreen(mpcm,post.postId)" (keyup.control.m)="createLineWidget(mpcm)"
+                            (keyup.control.shift.e)="toggleEditMode(mpcm)" (dblclick)="getInlineEdits(mpcm,post.postId)" (change)="getInlineEdits(mpcm,post.postId)"
+                            (contextmenu)="openCmMenu($event)" [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh:true}"
+                            #mpcm>
+
                         </ngx-codemirror>
                         <div style="margin-top:5%; height: 100%;">
                             <mat-accordion>
@@ -54,20 +65,22 @@
                                     </mat-expansion-panel-header>
                                     <mat-list dense>
                                         <mat-list-item class="suggestion" *ngFor="let sugg of suggestionsByPost.get(post.postId)">
-                                            
-                                                <div matLine style="white-space: pre-wrap; padding-top:1%;">
-                                                        <b>{{ loggedInUser.name == sugg.by?'You':sugg.by }}:</b> {{ sugg.suggestion }}
-                                                </div>
-                                                <span matLine style="padding-bottom:2%;"><b>suggested on:</b> {{ (sugg.timestamp | date:'short') }} </span>
-                                                <!--<div matLine style="margin-left:65%;">
+
+                                            <div matLine style="white-space: pre-wrap; padding-top:1%;">
+                                                <b>{{ loggedInUser.name == sugg.by?'You':sugg.by }}:</b> {{ sugg.suggestion
+                                                }}
+                                            </div>
+                                            <span matLine style="padding-bottom:2%;"><b>suggested on:</b> {{ (sugg.timestamp
+                                                | date:'short') }} </span>
+                                            <!--<div matLine style="margin-left:65%;">
                                                     <span matBadge="{{ sugg.recommended}}">
                                                         <button mat-icon-button matTooltip="Recommend this change" (click)="addRecommend(sugg);">
                                                             <mat-icon class="up">arrow_upward</mat-icon>
                                                         </button>
                                                     </span>
                                                 </div>-->
-                                                <mat-divider matLine></mat-divider>
-                                            
+                                            <mat-divider matLine></mat-divider>
+
                                         </mat-list-item>
                                     </mat-list>
                                 </mat-expansion-panel>
@@ -88,76 +101,95 @@
                         </div>
                     </mat-card-content>
                 </mat-card>
-        </div>
+            </div>
         </div>
     </div>
 </ng-template>
 <!-- Invited Posts template-->
 <ng-template #invitedPosts>
-        <div style="grid-row: 1 / span 1; max-width: 95%;" *ngIf="this.handleFbService.invitedPosts?.length != 0 else noPosts">
-            <h4>Invited Posts</h4>
-                 <div *ngFor="let post of this.handleFbService.invitedPosts" style = "padding-bottom: 2%; height: 50%;">
-                     
-                    <mat-card *ngIf=" post != null && post.postId !== ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;" class="z-depth">
-                            <mat-card-header>
-                                <mat-card-title color="primary">
-                                        <span style="font-size: 75%; padding-right: 80%;">
-                                                Posted on: {{ post.timestamp | date }}
-                                        </span><br>    
-                                    <b>By: {{ post.byName }}</b><br>
-                                </mat-card-title> 
-                                   <mat-card-subtitle style="white-space: pre-wrap"> {{ post.title  }}</mat-card-subtitle>
-                            </mat-card-header>
-                           <mat-card-content>
-                                <!-- <span style="padding-left: 97%;">
-                                        <button mat-icon-button (click)="openFullCode(post.pText);">
-                                            <mat-icon aria-label="View full code">fullscreen</mat-icon>
-                                        </button>
-                                    </span>
-                                    <br> -->
-                                    <ngx-codemirror [(ngModel)]="post.pText" (keyup.control.shift.f)="toggleFullscreen(mpcm)" [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', htmlMode: true, matchClosing: true, mode:'text/javascript',fullScreen:isFs,autoRefresh:true}" #mpcm>
-                                    </ngx-codemirror>
-                                <div style="margin-top:5%;">
-                                        <mat-accordion>
-                                            <mat-expansion-panel>
-                                                <mat-expansion-panel-header>
-                                                    <mat-panel-title>
-                                                        Suggestions
-                                                    </mat-panel-title>
-                                                </mat-expansion-panel-header>
-                                                <mat-list dense>
-                                                    <mat-list-item class="suggestion" *ngFor="let sugg of this.handleFbService.invitedPostSuggestions.get(post.postId)">
-                                                            <div matLine style="white-space: pre-wrap; padding-top:1%;">
-                                                                    <b>{{ loggedInUser.name == sugg.by?'You':sugg.by }}:</b> {{ sugg.suggestion }}
-                                                            </div>
-                                                            <span matLine style="padding-bottom:2%;"><b>suggested on:</b> {{ (sugg.timestamp | date:'short') }} </span>
-                                                            <!--<span matBadge="{{ sugg.recommended}}" style="margin-left:65%;">
+    <div style="grid-row: 1 / span 1; max-width: 95%;" *ngIf="this.handleFbService.invitedPosts?.length != 0 else noPosts">
+        <h4>Invited Posts</h4>
+        <div *ngFor="let post of this.handleFbService.invitedPosts" style="padding-bottom: 2%; height: 50%;">
+
+            <mat-card *ngIf=" post != null && post.postId !== ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;" class="z-depth">
+                <mat-card-header [matMenuTriggerFor]="menu">
+                    <mat-card-title color="primary">
+                        <span style="font-size: 75%; padding-right: 80%;">
+                            Posted on: {{ post.timestamp | date }}
+                            <mat-menu #menu="matMenu">
+                                    <button mat-menu-item (click)="getInlineEdits(ipcm,post.postId)">
+                                        <mat-icon>comment</mat-icon>
+                                        <span>Load Edits</span>
+                                    </button>
+                                    <button mat-menu-item (click)="toggleFullscreen(ipcm,post.postId)">
+                                        Fullscreen
+                                        <span>cntrl+shift+f</span>
+                                    </button>
+                                    <button mat-menu-item (click)="toggleEditMode(ipcm)">
+                                        Edit
+                                        <span>cntrl+shift+e</span>
+                                    </button>
+                                </mat-menu>
+                        </span>
+                        <br>
+                        <b>By: {{ post.byName }}</b><br>
+                    </mat-card-title>
+                    <mat-card-subtitle style="white-space: pre-wrap"> {{ post.title }}
+                    </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <ngx-codemirror [(ngModel)]="post.pText"
+                            (keyup.control.shift.f)="toggleFullscreen(ipcm, post.postId)" 
+                            (keyup.control.m)="createLineWidget(ipcm)"
+                            (keyup.control.shift.e)="toggleEditMode(ipcm)" 
+                            (dblclick)="getInlineEdits(ipcm,post.postId)" 
+                            (change)="getInlineEdits(ipcm,post.postId)"
+                            (contextmenu)="openCmMenu($event)"
+                            [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', htmlMode: true, matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh :true}"
+                        #ipcm>
+                    </ngx-codemirror>
+                    <div style="margin-top:5%;">
+                        <mat-accordion>
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Suggestions
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <mat-list dense>
+                                    <mat-list-item class="suggestion" *ngFor="let sugg of this.handleFbService.invitedPostSuggestions.get(post.postId)">
+                                        <div matLine style="white-space: pre-wrap; padding-top:1%;">
+                                            <b>{{ loggedInUser.name == sugg.by?'You':sugg.by }}:</b> {{ sugg.suggestion }}
+                                        </div>
+                                        <span matLine style="padding-bottom:2%;"><b>suggested on:</b> {{ (sugg.timestamp
+                                            | date:'short') }} </span>
+                                        <!--<span matBadge="{{ sugg.recommended}}" style="margin-left:65%;">
                                                                 <button mat-icon-button matTooltip="Recommend this change" (click)="addRecommend(sugg);">
                                                                     <mat-icon class="up">arrow_upward</mat-icon>
                                                                 </button>
                                                             </span>-->
-                                                        
-                                                        <mat-divider matLine></mat-divider>
-                                                    </mat-list-item>
-                                                </mat-list>
-                                            </mat-expansion-panel>
-                                            <mat-expansion-panel [expanded]="suggested">
-                                                <mat-expansion-panel-header>
-                                                    <mat-panel-title>
-                                                        Suggest a code change
-                                                    </mat-panel-title>
-                                                </mat-expansion-panel-header>
-                                                <mat-form-field style="width:100%;">
-                                                    <textarea matInput placeholder="Suggestion" #suggestion></textarea>
-                                                </mat-form-field>
-                                                <mat-action-row>
-                                                    <button mat-raised-button color="accent" (click)="addSuggestion(post, suggestion)"> Suggest</button>
-                                                </mat-action-row>
-                                            </mat-expansion-panel>
-                                        </mat-accordion>
-                                    </div>
-                            </mat-card-content>
-                        </mat-card>
+
+                                        <mat-divider matLine></mat-divider>
+                                    </mat-list-item>
+                                </mat-list>
+                            </mat-expansion-panel>
+                            <mat-expansion-panel [expanded]="suggested">
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        Suggest a code change
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+                                <mat-form-field style="width:100%;">
+                                    <textarea matInput placeholder="Suggestion" #suggestion></textarea>
+                                </mat-form-field>
+                                <mat-action-row>
+                                    <button mat-raised-button color="accent" (click)="addSuggestion(post, suggestion)"> Suggest</button>
+                                </mat-action-row>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+                </mat-card-content>
+            </mat-card>
         </div>
     </div>
 </ng-template>
