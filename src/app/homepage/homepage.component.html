@@ -7,7 +7,6 @@
     </div>-->
     <div style="display: grid; grid-row-gap: 10%; grid-column-gap: 5%; grid-template-columns: auto auto auto; padding-top:5%;">
         <div style="grid-row: 1 / span 1; width:25%; ">
-
         </div>
         <!-- My posts-->
         <div style="grid-row: 1 / span 1;" *ngIf="((usersPosts || []).length != 0 && getPostsRoute() === 'myPosts') else invitedPosts">
@@ -19,7 +18,7 @@
                         Posted on: {{ post.timestamp | date }}<br>
                     </span>
                     <span style="padding-left:94%;">
-                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" >
                             <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #menu="matMenu">
@@ -32,16 +31,16 @@
                                 <span>Delete Post</span>
                             </button>
                             <button mat-menu-item (click)="getInlineEdits(mpcm,post.postId)">
-                                <mat-icon>comment</mat-icon>
-                                <span>Load Edits</span>
+                                    <mat-icon>comment</mat-icon>
+                                    <span>Load Edits</span>
                             </button>
                             <button mat-menu-item (click)="toggleFullscreen(mpcm,post.postId)">
-                                Fullscreen
-                                <span>cntrl+shift+f</span>
+                                    <mat-icon>fullscreen</mat-icon>
+                                    <span>cntrl+shift+f</span>
                             </button>
                             <button mat-menu-item (click)="toggleEditMode(mpcm)">
-                                Edit
-                                <span>cntrl+shift+e</span>
+                                    <mat-icon>edit</mat-icon>
+                                    <span>cntrl+shift+e</span>
                             </button>
                         </mat-menu>
                     </span>
@@ -49,12 +48,18 @@
                         <mat-card-title color="primary" style="white-space: pre-wrap"> {{ post.title }}</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <ngx-codemirror [(ngModel)]="post.pText" (keyup.control.shift.f)="toggleFullscreen(mpcm,post.postId)" (keyup.control.m)="createLineWidget(mpcm)"
-                            (keyup.control.shift.e)="toggleEditMode(mpcm)" (dblclick)="getInlineEdits(mpcm,post.postId)" (change)="getInlineEdits(mpcm,post.postId)"
-                            (contextmenu)="openCmMenu($event)" [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh:true}"
+                        <ngx-codemirror 
+                            [(ngModel)]="post.pText" 
+                            (keyup.control.shift.f)="toggleFullscreen(mpcm,post.postId)" 
+                            (keyup.control.m)="createLineWidget(mpcm,post.postId)"
+                            (keyup.control.shift.e)="toggleEditMode(mpcm)" 
+                            (dblclick)="getInlineEdits(mpcm,post.postId)" 
+                            (change)="getInlineEdits(mpcm,post.postId)" 
+                            (select)="showOptions(mpcm)"
+                            [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh:true}"
                             #mpcm>
-
                         </ngx-codemirror>
+                        <!-- <button mat-icon-button [matMenuTriggerFor]="cmMenu" style="margin-left:95%;"><mat-icon>menu</mat-icon></button> -->
                         <div style="margin-top:5%; height: 100%;">
                             <mat-accordion>
                                 <mat-expansion-panel>
@@ -116,20 +121,6 @@
                     <mat-card-title color="primary">
                         <span style="font-size: 75%; padding-right: 80%;">
                             Posted on: {{ post.timestamp | date }}
-                            <mat-menu #menu="matMenu">
-                                    <button mat-menu-item (click)="getInlineEdits(ipcm,post.postId)">
-                                        <mat-icon>comment</mat-icon>
-                                        <span>Load Edits</span>
-                                    </button>
-                                    <button mat-menu-item (click)="toggleFullscreen(ipcm,post.postId)">
-                                        Fullscreen
-                                        <span>cntrl+shift+f</span>
-                                    </button>
-                                    <button mat-menu-item (click)="toggleEditMode(ipcm)">
-                                        Edit
-                                        <span>cntrl+shift+e</span>
-                                    </button>
-                                </mat-menu>
                         </span>
                         <br>
                         <b>By: {{ post.byName }}</b><br>
@@ -144,7 +135,6 @@
                             (keyup.control.shift.e)="toggleEditMode(ipcm)" 
                             (dblclick)="getInlineEdits(ipcm,post.postId)" 
                             (change)="getInlineEdits(ipcm,post.postId)"
-                            (contextmenu)="openCmMenu($event)"
                             [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', htmlMode: true, matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh :true}"
                         #ipcm>
                     </ngx-codemirror>

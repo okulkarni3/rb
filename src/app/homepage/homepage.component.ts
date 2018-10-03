@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { HandleAuthService } from '../handle-auth.service';
 import { Subscription, Observable, of } from 'rxjs';
 import { HandFbService } from '../hand-fb.service';
-import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatMenuTrigger } from '@angular/material';
+import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatMenuTrigger, MatMenu } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessagingService } from '../messaging.service';
 import { AlertModalComponent } from '../alert-modal/alert-modal.component';
@@ -33,7 +33,11 @@ export class HomepageComponent implements OnInit {
   isFs: boolean = false;
   inlineEditsByPostId = new Map();
   pushIds = new Map();
-  @ViewChild(MatMenuTrigger) cmMenu: MatMenuTrigger;
+  @ViewChild('cmMenuTrigger') cmMenuTrigger: MatMenuTrigger;
+  cmMenuPosition = { x: '0px', y: '0px' };
+  inlineEditsToSave = new Array();
+  inlineEditShown: boolean = false;
+
 
   constructor(private authServ: HandleAuthService, public dialog: MatDialog,
     private handleFbService: HandFbService, private snackBar: MatSnackBar, private router: Router,
@@ -44,6 +48,7 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.inlineEditShown = false;
     if (this.authServ.afAuth.auth.currentUser != undefined) {
       this.id = JSON.parse(JSON.stringify(this.authServ.afAuth.auth.currentUser)).uid;
       this.handleFbService.setLoggedInUserName();
@@ -123,7 +128,6 @@ export class HomepageComponent implements OnInit {
         }
       });
     });
-
     const dialogRef = this.dialog.open(AddReviewerDialog, {
       width: '100%',
       data: { postId: postId, users: userNames },
@@ -137,15 +141,9 @@ export class HomepageComponent implements OnInit {
     });
   }
 
-  openFullCode(pText: string) {
-    const dialogRef = this.dialog.open(MagnifiedCodeModalComponent, {
-      data: [pText, this.handleFbService.loggedInUser.name]
-    });
-  }
   //-------------Code mirror edit functions-----------------
 
   toggleFullscreen(mpcm, postId) {
-    console.log(mpcm);
     if (mpcm.codeMirror.getOption("fullScreen")) {
       mpcm.codeMirror.setOption("readOnly", true);
       mpcm.codeMirror.setOption("fullScreen", false);
@@ -153,24 +151,104 @@ export class HomepageComponent implements OnInit {
       this.getInlineEdits(mpcm, postId);
       mpcm.codeMirror.setOption("fullScreen", true);
       mpcm.codeMirror.setSize("100%", "100%");
+      mpcm.codeMirror.setOption("readOnly", false);
+      let snBar = this.snackBar.open("To toggle full screen press cntrl+shift+f", "toggle", {
+        duration: 10000
+      });
+      snBar.afterDismissed().subscribe((action) => {
+        if (action.dismissedByAction) {
+          mpcm.codeMirror.setOption("readOnly", true);
+          mpcm.codeMirror.setOption("fullScreen", false);
+        }
+      });
     }
   }
 
-  createLineWidget(mpcm) {
-    let doc = mpcm.codeMirror.getDoc();
-    if (doc.somethingSelected()) {
-      var suggestion = document.createElement("div");
-      suggestion.appendChild(document.createTextNode(this.handleFbService.loggedInUser.name + " => " + doc.getSelection()));
-      suggestion.className = "widget";
-      suggestion.style.backgroundColor = "yellow";
-      doc.replaceSelection("");
-      doc.addLineWidget(doc.getCursor(true).line - 1, suggestion, { coverGutter: true });
+  showOptions(mpcm) {
+    if (mpcm.codeMirror.getOption("fullScreen") && !this.inlineEditShown) {
+      let snBar = this.snackBar.open("Press cntrl+m to add selected text as edit", "Okay", {
+        duration: 2000
+      });
+      this.inlineEditShown = true;
     }
   }
 
-  openCmMenu(event){
+  createLineWidget(mpcm, postId) {
+    if (!mpcm.codeMirror.getOption("readOnly")) {
+      let doc = mpcm.codeMirror.getDoc();
+      if (doc.somethingSelected()) {
+        var suggestion = document.createElement("div");
+        let inlineEdit = doc.getSelection();
+        suggestion.appendChild(document.createTextNode(this.handleFbService.loggedInUser.name + " => " + inlineEdit));
+        suggestion.className = "widget";
+        suggestion.style.backgroundColor = "yellow";
+        //add close button
+        suggestion.appendChild(document.createElement("button"));
+        let clsBtn = suggestion.getElementsByTagName("button")[0];
+        var delFun = this.deleteInlineEdit;
+        delFun.bind(this.deleteInlineEdit, doc);
+        clsBtn.onclick = this.deleteInlineEdit.bind(null, doc, this.inlineEditsToSave);
+        clsBtn.appendChild(document.createTextNode("x"));
+        clsBtn.style.borderRadius = "50%";
+        clsBtn.style.backgroundColor = "#ed705a";
+        clsBtn.style.color = "white";
+        clsBtn.style.position = "absolute";
+        clsBtn.style.right = "0";
+        clsBtn.style.textDecoration = "none";
+        clsBtn.style.display = "inline-block";
+        //end
+        //add save button
+        suggestion.appendChild(document.createElement("button"));
+        let saveBtn = suggestion.getElementsByTagName("button")[1];
+        saveBtn.className = "saveBtn";
+        saveBtn.appendChild(document.createElement("div"));
+        let matIcon = saveBtn.getElementsByTagName("div")[0];
+        matIcon.appendChild(document.createTextNode("L"));
+        matIcon.style.transform = "scaleX(-1) rotate(-35deg)";
+        saveBtn.style.borderRadius = "50%";
+        saveBtn.style.backgroundColor = "#4CAF50";
+        saveBtn.style.color = "white";
+        saveBtn.style.position = "absolute";
+        saveBtn.style.right = "2%";
+        saveBtn.style.textDecoration = "none";
+        saveBtn.style.display = "inline-block";
+        let edit = {
+          postId: postId,
+          line: doc.getCursor(true).line - 1,
+          suggestion: inlineEdit,
+          byName: this.handleFbService.loggedInUser.name
+        }
+        saveBtn.onclick = this.addInlineEdit.bind(null, doc, edit, this.inlineEditsToSave);
+        //end
+        doc.replaceSelection("");
+        doc.addLineWidget(doc.getCursor(true).line - 1, suggestion, { coverGutter: true });
+      }
+    }
+  }
+
+  addInlineEdit(doc, edit, inlineEditsToSave, event) {
+    let cm = doc.getEditor();
+    inlineEditsToSave.push(edit);
+    let widgetNode = doc.lineInfo(cm.coordsChar({ left: event.clientX, top: event.clientY }, "window").line).widgets[0].node;
+    widgetNode.removeChild(widgetNode.getElementsByClassName("saveBtn")[0]);
+  }
+
+  deleteInlineEdit(doc, inlineEditsToSave, event) {
+    let cm = doc.getEditor();
+    inlineEditsToSave.filter(edit => !doc.lineInfo(cm.coordsChar({
+      left: event.clientX,
+      top: event.clientY
+    }, "window").line)
+      .widgets[0]
+      .node.textContent.includes(edit.suggestion));
+    doc.lineInfo(cm.coordsChar({ left: event.clientX, top: event.clientY }, "window").line).widgets[0].clear();
+  }
+
+  openCmMenu(event: MouseEvent) {
     event.preventDefault();
-    this.cmMenu.openMenu();
+    this.cmMenuPosition.x = event.clientX + 'px';
+    this.cmMenuPosition.y = event.clientY + 'px';
+    this.cmMenuTrigger.openMenu();
   }
 
   getInlineEdits(cm, postId) {
