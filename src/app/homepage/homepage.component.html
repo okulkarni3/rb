@@ -53,9 +53,7 @@
                             (keyup.control.shift.f)="toggleFullscreen(mpcm,post.postId)" 
                             (keyup.control.m)="createLineWidget(mpcm,post.postId)"
                             (keyup.control.shift.e)="toggleEditMode(mpcm)" 
-                            (dblclick)="getInlineEdits(mpcm,post.postId)" 
-                            (change)="getInlineEdits(mpcm,post.postId)" 
-                            (select)="showOptions(mpcm)"
+                            (contextmenu)="contextMenuCall(mpcm,post.postId, $event)"
                             [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh:true}"
                             #mpcm>
                         </ngx-codemirror>
@@ -117,7 +115,7 @@
         <div *ngFor="let post of this.handleFbService.invitedPosts" style="padding-bottom: 2%; height: 50%;">
 
             <mat-card *ngIf=" post != null && post.postId !== ''" style="align-content:center; padding-bottom: 5%; max-width: 75%;" class="z-depth">
-                <mat-card-header [matMenuTriggerFor]="menu">
+                <mat-card-header>
                     <mat-card-title color="primary">
                         <span style="font-size: 75%; padding-right: 80%;">
                             Posted on: {{ post.timestamp | date }}
@@ -127,15 +125,33 @@
                     </mat-card-title>
                     <mat-card-subtitle style="white-space: pre-wrap"> {{ post.title }}
                     </mat-card-subtitle>
+                    <span style="margin-left:auto">
+                        <button mat-icon-button [matMenuTriggerFor]="ipMenu" >
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #ipMenu="matMenu">
+                            <button mat-menu-item (click)="getInlineEdits(ipcm,post.postId)">
+                                    <mat-icon>comment</mat-icon>
+                                    <span>Load Edits</span>
+                            </button>
+                            <button mat-menu-item (click)="toggleFullscreen(ipcm,post.postId)">
+                                    <mat-icon>fullscreen</mat-icon>
+                                    <span>cntrl+shift+f</span>
+                            </button>
+                            <button mat-menu-item (click)="toggleEditMode(ipcm)">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>cntrl+shift+e</span>
+                            </button>
+                        </mat-menu>
+                    </span>
                 </mat-card-header>
                 <mat-card-content>
-                    <ngx-codemirror [(ngModel)]="post.pText"
+                    <ngx-codemirror [(ngModel)]="post.pText" 
                             (keyup.control.shift.f)="toggleFullscreen(ipcm, post.postId)" 
-                            (keyup.control.m)="createLineWidget(ipcm)"
-                            (keyup.control.shift.e)="toggleEditMode(ipcm)" 
-                            (dblclick)="getInlineEdits(ipcm,post.postId)" 
-                            (change)="getInlineEdits(ipcm,post.postId)"
-                            [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', htmlMode: true, matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh :true}"
+                            (keyup.control.m)="createLineWidget(ipcm,post.postId)"
+                            (keyup.control.shift.e)="toggleEditMode(ipcm)"
+                            (contextmenu)="contextMenuCall(ipcm,post.postId, $event)"
+                            [options]="{readOnly:true,lineNumbers:true,lineWrapping:true, theme:'elegant', htmlMode: true, matchTags: {bothTags: true}, mode:'text/javascript',fullScreen:isFs,autoRefresh :true}" 
                         #ipcm>
                     </ngx-codemirror>
                     <div style="margin-top:5%;">

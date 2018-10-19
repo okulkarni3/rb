@@ -1,0 +1,29 @@
+<mat-list role="list">
+  <mat-list-item role="listitem">
+    <button mat-menu-item (click)="setInlineEdit()">
+      <mat-icon color='primary' >rate_review</mat-icon>
+      <span style="font-size:small">cntrl+m</span>
+    </button>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+  <mat-list-item role="listitem">
+    <button mat-menu-item (click)="getInlineEdits()">
+      <mat-icon color='primary'>comment</mat-icon>
+      <span style="font-size:small">Load Edits</span>
+    </button>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+  <mat-list-item role="listitem">
+    <button mat-menu-item (click)="toggleFullscreen()">
+      <mat-icon color='primary'>fullscreen</mat-icon>
+      <span style="font-size:small">cntrl+shift+f</span>
+    </button>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+  <mat-list-item role="listitem">
+    <button mat-menu-item (click)="toggleEditMode()">
+      <mat-icon color='primary'>edit</mat-icon>
+      <span style="font-size:small">cntrl+shift+e</span>
+    </button>
+  </mat-list-item>
+</mat-list>

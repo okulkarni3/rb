@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MagnifiedCodeModalComponent } from './magnified-code-modal.component';
+import { CmModalMenuComponent } from './cm-modal-menu.component';
 
-describe('MagnifiedCodeModalComponent', () => {
-  let component: MagnifiedCodeModalComponent;
-  let fixture: ComponentFixture<MagnifiedCodeModalComponent>;
+describe('CmModalMenuComponent', () => {
+  let component: CmModalMenuComponent;
+  let fixture: ComponentFixture<CmModalMenuComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MagnifiedCodeModalComponent ]
+      declarations: [ CmModalMenuComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MagnifiedCodeModalComponent);
+    fixture = TestBed.createComponent(CmModalMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

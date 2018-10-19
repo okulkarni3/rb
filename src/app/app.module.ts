@@ -19,13 +19,13 @@ import { HomepageComponent } from './homepage/homepage.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { AlertModalComponent } from './alert-modal/alert-modal.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { MagnifiedCodeModalComponent } from './magnified-code-modal/magnified-code-modal.component';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/markdown/markdown';
 import 'codemirror/addon/display/autorefresh';
 import 'codemirror/addon/merge/merge';
-import 'codemirror/addon/display/fullscreen'
+import 'codemirror/addon/display/fullscreen';
+import { CmModalMenuComponent } from './cm-modal-menu/cm-modal-menu.component'
 
 @NgModule({
   declarations: [
@@ -37,9 +37,10 @@ import 'codemirror/addon/display/fullscreen'
     LandingPageComponent,
     CreatNewPostDialog,
     AddReviewerDialog,
+    CmModalMenuComponent,
     AlertModalComponent,
     ForgotPasswordComponent,
-    MagnifiedCodeModalComponent
+    CmModalMenuComponent
   ],
   imports: [
     BrowserModule,
@@ -72,7 +73,7 @@ import 'codemirror/addon/display/fullscreen'
     AppRoutingModule,
     CodemirrorModule
   ],
-  entryComponents:[CreatNewPostDialog, AddReviewerDialog, AlertModalComponent, ForgotPasswordComponent, MagnifiedCodeModalComponent],
+  entryComponents:[CreatNewPostDialog, AddReviewerDialog, AlertModalComponent, ForgotPasswordComponent, CmModalMenuComponent],
   providers: [],
   bootstrap: [AppComponent]
 })

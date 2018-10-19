@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { HandleAuthService } from './handle-auth.service';
-import { take, switchMap } from 'rxjs/operators';
+import { take, switchMap, map } from 'rxjs/operators';
 import { Observable, of, observable } from 'rxjs';
 
 @Injectable({
@@ -128,10 +128,24 @@ export class HandFbService {
     this.fb.object('Posts/' + postId).remove();
     //delete post suggestions
     var suggSub = this.fb.list('Suggestions/', ref => ref.orderByChild('postId')
-      .equalTo(postId)).valueChanges();
+      .equalTo(postId)).valueChanges().pipe(take(1));
     suggSub.subscribe((suggestions) => {
       suggestions.forEach((sugg) => {
         this.fb.object("Suggestions/" + JSON.parse(JSON.stringify(sugg)).suggKey).remove();
+      });
+    });
+    this.fb.list("/InlineEdits", ref => ref.orderByChild("postId")
+    .equalTo(postId)).snapshotChanges().pipe(map(items=>{
+      return items.map(a=>{
+        const $key = a.payload.key;
+        const data = a.payload.val();
+        return {$key, data};
+      });
+    })).subscribe((items)=>{
+      items.forEach(item=>{
+        this.fb.list("InlineEdits").remove(item.$key).catch(error=>{
+          console.log(error);
+        });
       });
     });
   }
@@ -166,6 +180,9 @@ export class HandFbService {
     });
   }
 
+  saveInlineEdit(edit){
+    this.fb.list('InlineEdits').push(edit);
+  }
   getInlineEditsByPostId(postId: string) {
     return this.fb.list("/InlineEdits", ref => ref.orderByChild("postId")
     .equalTo(postId)).valueChanges().pipe(take(1));
